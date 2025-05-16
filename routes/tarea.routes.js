@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 
-const { crearTarea } = require('../controllers/tarea.controller.js');
+const { crearTarea, obtenerTareas } = require('../controllers/tarea.controller.js');
 const middlewareAcceso = require('../middlewares/verificarTokenAcesso.js');
 const middlewareRefresh = require('../middlewares/verificarTokenRefresh.js');
 const autorizacionPorId = require('../middlewares/autorizacionId.js');
@@ -30,5 +30,9 @@ router.post(
     },
     crearTarea
 );
-
+router.get(
+    '/',
+    middlewareAcceso.verificarTokenAcesso,
+    obtenerTareas
+);
 module.exports = router;
