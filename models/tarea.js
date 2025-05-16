@@ -4,11 +4,6 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Tarea extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
       Tarea.belongsTo(models.Usuario, {
         foreignKey: 'usuarios_id',
@@ -29,6 +24,17 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Tarea',
+    hooks: {
+      async beforeCreate(tarea, options) {
+        if(!tarea.estado_id) {
+          const { Estado } = sequelize.models;
+          const estadoPendiente = await Estado.findOne({ where: { estado: 'Pendiente' } });
+          if (estadoPendiente) {
+            tarea.estado_id = estadoPendiente.id;
+          }
+        }
+      }
+    }
   });
   return Tarea;
 };

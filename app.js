@@ -4,6 +4,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var usuarioRouter = require('./routes/usuario.routes.js');
+var tareaRouter = require('./routes/tarea.routes.js');
 
 var app = express();
 
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 });
 // Rutas
 app.use('/api/auth', usuarioRouter);
+app.use('/api/tasks', tareaRouter);
 
 
 module.exports = app;

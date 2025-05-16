@@ -4,9 +4,9 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.bulkInsert('Estados', [
-      { estado: 'pendiente', createdAt: new Date(), updatedAt: new Date() },
-      { estado: 'en progreso', createdAt: new Date(), updatedAt: new Date() },
-      { estado: 'completada', createdAt: new Date(), updatedAt: new Date() }
+      { estado: 'Pendiente', createdAt: new Date(), updatedAt: new Date() },
+      { estado: 'En progreso', createdAt: new Date(), updatedAt: new Date() },
+      { estado: 'Completada', createdAt: new Date(), updatedAt: new Date() }
     ], {});
   },
 
