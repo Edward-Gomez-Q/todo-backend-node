@@ -113,12 +113,10 @@ exports.cerrarSesion = async (req, res) => {
 //Obtener datos del usuario con access token}
 exports.obtenerDatosUsuario = async (req, res) => {
     try {
-        const { id } = req.params;
-        const usuario = await Usuario.findByPk(id);
+        const usuario = await Usuario.findByPk(req.userId);
         if (!usuario) {
             return res.status(404).json({ mensaje: 'Usuario no encontrado' });
         }
-        //Quitar la contraseña del usuario antes de enviarlo
         const { contrasena, ...usuarioSinContrasena } = usuario.toJSON();
         return res.status(200).json(usuarioSinContrasena);
     } catch (error) {

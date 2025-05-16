@@ -1,6 +1,6 @@
 const { Tarea } = require('../models');
 const { Usuario } = require('../models');
-
+const { Estado } = require('../models');
 const { Op, Sequelize } = require('sequelize');
 //Crear una nueva tarea
 exports.crearTarea = async (req, res) => {
@@ -97,5 +97,50 @@ exports.obtenerTareas = async (req, res) => {
     } catch (error) {
         console.error('Error al obtener tareas:', error);
         return res.status(500).json({ mensaje: 'Error al obtener las tareas' });
+    }
+}
+//Actualizar una tarea
+exports.actualizarTarea = async (req, res) => {
+    const { id } = req.params;
+    const { title, description, dueDate, estado } = req.body;
+    try {
+        const tarea = await Tarea.findOne({ where: { id: id, usuarios_id: req.userId } });
+        if (!tarea) {
+            return res.status(404).json({ mensaje: 'Tarea no encontrada' });
+        }
+        const estadosDisponibles = await Estado.findAll();
+        const estadoActual = estadosDisponibles.find(estadoObj => estadoObj.id === tarea.estado_id);
+        if (estadoActual && estadoActual.estado === 'Completada') {
+            return res.status(400).json({ mensaje: 'No se puede modificar una tarea que ya está completada, solo se puede eliminar' });
+        }
+
+        tarea.titulo = title || tarea.titulo;
+        tarea.descripcion = description || tarea.descripcion;
+        tarea.fechaLimite = dueDate || tarea.fechaLimite;
+
+        if (estado && estado !== tarea.estado_id) {
+            const estadoNuevoObj = estadosDisponibles.find(estadoObj => estadoObj.id === estado);
+            if (!estadoNuevoObj) {
+                return res.status(400).json({ mensaje: 'Estado no válido' });
+            }
+            if (estadoNuevoObj.estado === 'En progreso' && estadoActual.estado !== 'Pendiente') {
+                return res.status(400).json({ mensaje: 'Solo se puede cambiar a "En Progreso" si la tarea está "Pendiente"' });
+            }
+            if (estadoNuevoObj.estado === 'Completada' && estadoActual.estado !== 'En progreso') {
+                return res.status(400).json({ mensaje: 'Solo se puede cambiar a "Completada" si la tarea está "En Progreso"' });
+            }
+            if (estadoNuevoObj.estado === 'Pendiente' && 
+                (estadoActual.estado === 'En progreso' || estadoActual.estado === 'Completada')) {
+                return res.status(400).json({ 
+                    mensaje: 'No se puede volver a "Pendiente" desde "En Progreso" o "Completada"' 
+                });
+            }
+            tarea.estado_id = estado;
+        }
+        await tarea.save();
+        return res.status(200).json({ mensaje: 'Tarea actualizada exitosamente', tarea });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensaje: 'Error al actualizar la tarea' });
     }
 }

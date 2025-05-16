@@ -35,7 +35,7 @@ router.post('/login',
     iniciarSesion
 );
 //Obtener datos del usuario
-router.get('/me/:id', middlewareAcceso.verificarTokenAcesso, autorizacionPorId.verificarPermisosPorId, obtenerDatosUsuario);
+router.get('/me', middlewareAcceso.verificarTokenAcesso, obtenerDatosUsuario);
 //Cerrar sesión
 router.post('/logout', middlewareRefresh.verificarRefreshToken, cerrarSesion);
 //Generar nuevo access token
