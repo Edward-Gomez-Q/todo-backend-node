@@ -144,3 +144,23 @@ exports.actualizarTarea = async (req, res) => {
         return res.status(500).json({ mensaje: 'Error al actualizar la tarea' });
     }
 }
+
+//Eliminar una tarea
+exports.eliminarTarea = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const tarea = await Tarea.findOne({ where: { id: id, usuarios_id: req.userId } });
+        if (!tarea) {
+            return res.status(404).json({ mensaje: 'Tarea no encontrada' });
+        }
+        const estado = await Estado.findByPk(tarea.estado_id);
+        if (!estado || estado.estado !== 'Completada') {
+            return res.status(400).json({ mensaje: 'Solo se puede eliminar una tarea que esté "Completada"' });
+        }
+        await tarea.destroy();
+        return res.status(200).json({ mensaje: 'Tarea eliminada exitosamente' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ mensaje: 'Error al eliminar la tarea' });
+    }
+}

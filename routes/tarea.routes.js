@@ -2,10 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 
-const { crearTarea, obtenerTareas, actualizarTarea } = require('../controllers/tarea.controller.js');
+const { crearTarea, obtenerTareas, actualizarTarea, eliminarTarea} = require('../controllers/tarea.controller.js');
 const middlewareAcceso = require('../middlewares/verificarTokenAcesso.js');
-const middlewareRefresh = require('../middlewares/verificarTokenRefresh.js');
-const autorizacionPorId = require('../middlewares/autorizacionId.js');
 
 router.post(
     '/',
@@ -58,6 +56,11 @@ router.put(
         next();
     },
     actualizarTarea
+);
+router.delete(
+    '/:id',
+    middlewareAcceso.verificarTokenAcesso,
+    eliminarTarea
 );
 
 
