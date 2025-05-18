@@ -6,11 +6,12 @@ const { Op, Sequelize } = require('sequelize');
 exports.crearTarea = async (req, res) => {
     const { title, description, dueDate } = req.body;
     try {
+        const fechaNormalizada = new Date(`${dueDate}T12:00:00`);
         const usuario = await Usuario.findByPk(req.userId);
         const nuevaTarea = await Tarea.create({
             titulo: title,
             descripcion: description,
-            fechaLimite: dueDate,
+            fechaLimite: fechaNormalizada,
             usuarios_id: usuario.id,
         });
         return res.status(201).json({ mensaje: 'Tarea creada exitosamente', tarea: nuevaTarea });

@@ -9,8 +9,9 @@ router.post(
     '/',
     middlewareAcceso.verificarTokenAcesso,
     body('title').notEmpty().withMessage('El título es obligatorio'),
-    body('description'),
-    body('dueDate').isDate().withMessage('La fecha límite no es válida')
+    body('description').optional(),
+    body('dueDate')
+        .isISO8601().withMessage('La fecha límite no es válida')
         .custom((value) => {
             const fechaLimite = new Date(value);
             const fechaActual = new Date();
