@@ -114,10 +114,11 @@ exports.actualizarTarea = async (req, res) => {
         if (estadoActual && estadoActual.estado === 'Completada') {
             return res.status(400).json({ mensaje: 'No se puede modificar una tarea que ya está completada, solo se puede eliminar' });
         }
+        const fechaNormalizada = new Date(`${dueDate}T12:00:00`);
 
         tarea.titulo = title || tarea.titulo;
         tarea.descripcion = description || tarea.descripcion;
-        tarea.fechaLimite = dueDate || tarea.fechaLimite;
+        tarea.fechaLimite = fechaNormalizada || tarea.fechaLimite;
 
         if (estado && estado !== tarea.estado_id) {
             const estadoNuevoObj = estadosDisponibles.find(estadoObj => estadoObj.id === estado);
