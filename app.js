@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
 
 var usuarioRouter = require('./routes/usuario.routes.js');
 var tareaRouter = require('./routes/tarea.routes.js');
@@ -16,17 +17,20 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Configuración de CORS
-const front = process.env.FR
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    next();
-});
+const front = process.env.URL_FRONTEND;
+if (!front) {
+  console.warn('ADVERTENCIA: URL_FRONTEND no está definida en las variables de entorno');
+}
+const corsOptions = {
+  origin: front || 'http://localhost:3000', // URL del frontend o localhost como fallback
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
 // Rutas
 app.use('/api/auth', usuarioRouter);
 app.use('/api/tasks', tareaRouter);
-
 
 module.exports = app;
