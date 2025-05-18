@@ -5,6 +5,8 @@ var logger = require('morgan');
 
 var usuarioRouter = require('./routes/usuario.routes.js');
 var tareaRouter = require('./routes/tarea.routes.js');
+const dotenv = require('dotenv');
+dotenv.config();
 
 var app = express();
 
@@ -15,6 +17,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Configuración de CORS
+const front = process.env.FR
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
